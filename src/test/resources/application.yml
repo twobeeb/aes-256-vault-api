@@ -2,6 +2,6 @@ micronaut:
   application:
     name: aes256VaultApi
 vaults:
-  test:
+  tests:
     key: aaaabbbbccccdddd
     salt: p8t42EhY9z2eSUdpGeq7HX7RboMrsJAhUnu3EEJJVS
