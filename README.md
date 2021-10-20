@@ -1,8 +1,11 @@
 ## aes-256-vault-api
+[![GitHub release](https://img.shields.io/github/v/release/twobeeb/aes-256-vault-api)](https://github.com/twobeeb/aes-256-vault-api/releases)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/twobeeb/aes-256-vault-api/GraalVM%20CE%20CI)](https://github.com/twobeeb/aes-256-vault-api/actions/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/twobeeb/aes-256-vault-api?label=aes-256-vault-api%20pulls&logo=Docker)](https://hub.docker.com/r/twobeeb/kafkactl/tags)
 
 A simple API to vault passwords without the caller knowing the secret key
 
-``docker pull twobeeb/aes-256-vault-api:0.4``
+``docker pull twobeeb/aes-256-vault-api:<latest-version>``
 
 ## Usage
 ````console
