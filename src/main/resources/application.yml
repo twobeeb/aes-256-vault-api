@@ -1,7 +1,11 @@
 micronaut:
   application:
     name: aes256VaultApi
+# hack to avoid triggering PropertyPlaceholderResolver
+# otherwise "${aes256:%s}" would always result as "%s"
+dollar: '$'
 #vaults:
 #  test:
 #    key: aaaabbbbccccdddd
 #    salt: p8t42EhY9z2eSUdpGeq7HX7RboMrsJAhUnu3EEJJVS
+#    format: ${dollar}{aes256:%s}

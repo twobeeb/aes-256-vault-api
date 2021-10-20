@@ -26,6 +26,8 @@ public class VaultConfig {
     private String key;
     @NotBlank
     private String salt;
+    @NotBlank
+    private String format = "%s";
 
     public VaultConfig(@Parameter String name) {
         this.name = name;
@@ -51,6 +53,14 @@ public class VaultConfig {
         this.salt = salt;
     }
 
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
     public String encryptAndFormat(String strToEncrypt) {
         try {
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -63,8 +73,8 @@ public class VaultConfig {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
+            return String.format(format, Base64.getEncoder()
+                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
