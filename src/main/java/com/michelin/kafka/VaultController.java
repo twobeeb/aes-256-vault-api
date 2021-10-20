@@ -25,7 +25,7 @@ public class VaultController {
 
     @Consumes(MediaType.TEXT_PLAIN)
     @Post(value = "/{vault}")
-    String vaultPassword(String vault, @Body String password){
+    String vaultPasswordPlainText(String vault, @Body String password){
         VaultConfig vaultConfig = vaultConfigs.stream()
                 .filter(v -> vault.equals(v.getName()))
                 .findFirst()
@@ -36,14 +36,8 @@ public class VaultController {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Post(value = "/{vault}")
-    String vaultPassword(String vault, @Valid @Body Password body){
-        return vaultPassword(vault, body.password);
-    }
-
-    @Introspected
-    static class Password {
-        @NotBlank
-        public String password;
+    String vaultPasswordJson(String vault, String password){
+        return vaultPasswordPlainText(vault, password);
     }
 
 }
