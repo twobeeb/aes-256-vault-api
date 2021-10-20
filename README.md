@@ -2,6 +2,8 @@
 
 A simple API to vault passwords without the caller knowing the secret key
 
+``docker pull twobeeb/aes-256-vault-api:0.4``
+
 ## Usage
 ````console
 # Lists the available vaults
@@ -91,7 +93,7 @@ spec:
     spec:
       containers:
       - name: aes-256-vault-api
-        image: twobeeb/aes-256-vault-api
+        image: twobeeb/aes-256-vault-api:0.4
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
