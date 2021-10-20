@@ -91,7 +91,7 @@ spec:
     spec:
       containers:
       - name: aes-256-vault-api
-        image: twobeeb/aes-256-vault-api:0.3
+        image: twobeeb/aes-256-vault-api
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
