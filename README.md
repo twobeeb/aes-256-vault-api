@@ -1,83 +1,103 @@
-## Micronaut 3.1.1 Documentation
+## aes-256-vault-api
 
-- [User Guide](https://docs.micronaut.io/3.1.1/guide/index.html)
-- [API Reference](https://docs.micronaut.io/3.1.1/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/3.1.1/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
+A simple API to vault passwords without the caller knowing the secret key
+
+## Usage
+````console
+# Lists the available vaults
+curl http://aes-256-vault-api:8080/
+> ["f4m", "test"]
+
+# Vault a password against a vault
+curl -X POST http://aes-256-vault-api:8080/f4m -d '{"password":"p@ss"}' -H "Content-Type: application/json"
+> znkEn3qalsk+TrZKKfohFw==
+
+# Same in plaintext
+curl -X POST http://aes-256-vault-api:8080/f4m -d "p@ss" -H "Content-Type: text/plain"
+> znkEn3qalsk+TrZKKfohFw==
+````
+## Configuration
+
+Either mount the following config file in ``/app/application.yml``
+````yaml
+# /app/application.yml
+vaults:
+  f4m:
+    key: aaaabbbbccccdddd
+    salt: p8t42EhY9z2eSUdpGeq7HX7RboMrsJAhUnu3EEJJVS
+# You can add as many as you need :
+#  team2:
+#    key: <team2's key>
+#    salt: <team2's salt>
+#  other:
+#    key: <other's key>
+#    salt: <other's salt>
+````
+or load the application with the equivalent environment properties 
+````shell
+VAULTS_F4M_KEY=aaaabbbbccccdddd
+VAULTS_F4M_SALT=p8t42EhY9z2eSUdpGeq7HX7RboMrsJAhUnu3EEJJVS
+````
+
+### K8S deployment example
+````yaml
+k8s_deployment.yml
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: aes-256-vault-api
+  name: aes-256-vault-api-service
+spec:
+  selector:
+    app: aes-256-vault-api
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  labels:
+    app: aes-256-vault-api
+  name: aes-256-vault-api-secret
+stringData:
+  VAULTS_F4M_KEY: aaaabbbbccccdddd
+  VAULTS_F4M_SALT: p8t42EhY9z2eSUdpGeq7HX7RboMrsJAhUnu3EEJJVS
+#  You can add as many as you need :
+#  VAULTS_TEAM2_KEY: <team2's key>
+#  VAULTS_TEAM2_SALT: <team2's salt>
+#  VAULTS_OTHER_KEY: <other's key>
+#  VAULTS_OTHER_SALT: <other's salt>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aes-256-vault-api
+  name: aes-256-vault-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: aes-256-vault-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: aes-256-vault-api
+    spec:
+      containers:
+      - name: aes-256-vault-api
+        image: twobeeb/aes-256-vault-api:0.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - secretRef:
+              name: aes-256-vault-api-secret
+      restartPolicy: Always
 
-## Push GraalVM Native Image To Docker Registry Workflow
-
-Workflow file: [`.github/workflows/graalvm.yml`](.github/workflows/graalvm.yml)
-
-### Workflow description
-For pushes to the `master` branch, the workflow will:
-1. Setup the build environment with respect to the selected java/graalvm version.
-2. Login to docker registry based on provided configuration.
-3. Build, tag and push Docker image with Micronaut application to the Docker container image.
-
-### Dependencies on other GitHub Actions
-- [Docker login](`https://github.com/docker/login-action`)(`docker/login`)
-- [Setup GraalVM](`https://github.com/DeLaGuardo/setup-graalvm`)(`DeLaGuardo/setup-graalvm`)
-
-### Setup
-Add the following GitHub secrets:
-
-| Name | Description |
-| ---- | ----------- |
-| DOCKER_USERNAME | Username for Docker registry authentication. |
-| DOCKER_PASSWORD | Docker registry password. |
-| DOCKER_REPOSITORY_PATH | Path to the docker image repository inside the registry, e.g. for the image `foo/bar/micronaut:0.1` it is `foo/bar`. |
-| DOCKER_REGISTRY_URL | Docker registry url. |
-#### Configuration examples
-Specifics on how to configure public cloud docker registries like DockerHub, Google Container Registry (GCR), AWS Container Registry (ECR),
-Oracle Cloud Infrastructure Registry (OCIR) and many more can be found in [docker/login-action](https://github.com/docker/login-action)
-documentation.
-
-#### DockerHub
-
-- `DOCKER_USERNAME` - DockerHub username
-- `DOCKER_PASSWORD` - DockerHub password or personal access token
-- `DOCKER_REPOSITORY_PATH` - DockerHub organization or the username in case of personal registry
-- `DOCKER_REGISTRY_URL` - No need to configure for DockerHub
-
-> See [docker/login-action for DockerHub](https://github.com/docker/login-action#dockerhub)
-
-#### Google Container Registry (GCR)
-Create service account with permission to edit GCR or use predefined Storage Admin role.
-
-- `DOCKER_USERNAME` - set exactly to `_json_key`
-- `DOCKER_PASSWORD` - content of the service account json key file
-- `DOCKER_REPOSITORY_PATH` - `<project-id>/foo`
-- `DOCKER_REGISTRY_URL` - `gcr.io`
-
-> See [docker/login-action for GCR](https://github.com/docker/login-action#google-container-registry-gcr)
-
-#### AWS Elastic Container Registry (ECR)
-Create IAM user with permission to push to ECR (or use AmazonEC2ContainerRegistryFullAccess role).
-
-- `DOCKER_USERNAME` - access key ID
-- `DOCKER_PASSWORD` - secret access key
-- `DOCKER_REPOSITORY_PATH` - no need to set
-- `DOCKER_REGISTRY_URL` - set to `<aws-account-number>.dkr.ecr.<region>.amazonaws.com`
-
-> See [docker/login-action for ECR](https://github.com/docker/login-action#aws-elastic-container-registry-ecr)
-
-#### Oracle Infrastructure Cloud Registry (OCIR)
-[Create auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken) for authentication.
-
-- `DOCKER_USERNAME` - username in format `<tenancy>/<username>`
-- `DOCKER_PASSWORD` - account auth token
-- `DOCKER_REPOSITORY_PATH` - `<tenancy>/<registry>/foo`
-- `DOCKER_REGISTRY_URL` - set to `<region>.ocir.io`
-
-> See [docker/login-action for OCIR](https://github.com/docker/login-action#oci-oracle-cloud-infrastructure-registry-ocir)
-
-## Feature github-workflow-graal-docker-registry documentation
-
-- [https://docs.github.com/en/free-pro-team@latest/actions](https://docs.github.com/en/free-pro-team@latest/actions)
-
-## Feature http-client documentation
-
-- [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
-
+````

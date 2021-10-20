@@ -1,17 +1,13 @@
 package com.michelin.kafka;
 
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@Controller("/vaults")
+@Controller("/")
 public class VaultController {
     @Inject
     public List<VaultConfig> vaultConfigs;

@@ -3,7 +3,7 @@ plugins {
     id("io.micronaut.application") version "2.0.6"
 }
 
-version = "0.3"
+version = "0.4"
 group = "com.michelin.kafka"
 
 repositories {
