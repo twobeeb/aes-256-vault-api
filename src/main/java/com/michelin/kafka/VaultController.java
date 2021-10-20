@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Controller("/vaults")
 public class VaultController {
     @Inject
-    List<VaultConfig> vaultConfigs;
+    public List<VaultConfig> vaultConfigs;
 
     @Get
     List<String> listVaults(){
