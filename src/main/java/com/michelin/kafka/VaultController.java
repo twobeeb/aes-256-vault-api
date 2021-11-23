@@ -1,5 +1,6 @@
 package com.michelin.kafka;
 
+import io.micronaut.context.annotation.Property;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
@@ -20,6 +21,7 @@ public class VaultController {
     }
 
     @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Post(value = "/{vault}")
     String vaultPasswordPlainText(String vault, @Body String password){
         VaultConfig vaultConfig = vaultConfigs.stream()
@@ -31,6 +33,7 @@ public class VaultController {
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Post(value = "/{vault}")
     String vaultPasswordJson(String vault, String password){
         return vaultPasswordPlainText(vault, password);
